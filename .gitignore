@@ -1,6 +1,7 @@
 .DS_Store
 .idea
 log
+data
 models
 
 eval_results/
@@ -22,3 +23,4 @@ __pycache__/
 
 # pyenv
 .python-version
+.venv
