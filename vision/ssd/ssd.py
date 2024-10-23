@@ -1,19 +1,24 @@
-import torch.nn as nn
+
 import torch
-import numpy as np
-from typing import List, Tuple
+import torch.nn as nn
 import torch.nn.functional as F
 
-from ..utils import box_utils
+import numpy as np
+
+from typing import List, Tuple
 from collections import namedtuple
-GraphPath = namedtuple("GraphPath", ['s0', 'name', 's1'])  #
+
+from ..utils import box_utils
+
+GraphPath = namedtuple("GraphPath", ['s0', 'name', 's1'])
 
 
 class SSD(nn.Module):
     def __init__(self, num_classes: int, base_net: nn.ModuleList, source_layer_indexes: List[int],
                  extras: nn.ModuleList, classification_headers: nn.ModuleList,
                  regression_headers: nn.ModuleList, is_test=False, config=None, device=None):
-        """Compose a SSD model using the given components.
+        """
+        Compose a SSD model using the given components.
         """
         super(SSD, self).__init__()
 
@@ -33,15 +38,17 @@ class SSD(nn.Module):
             self.device = device
         else:
             self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        if is_test:
-            self.config = config
-            self.priors = config.priors.to(self.device)
+
+        self.config = config
+        self.priors = config.priors.to(self.device)
             
-    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.Tensor, get_feature_map_size: bool=False) -> Tuple[torch.Tensor, torch.Tensor]:
         confidences = []
         locations = []
         start_layer_index = 0
         header_index = 0
+        if get_feature_map_size:
+            feature_maps = []
         for end_layer_index in self.source_layer_indexes:
             if isinstance(end_layer_index, GraphPath):
                 path = end_layer_index
@@ -70,6 +77,8 @@ class SSD(nn.Module):
                 end_layer_index += 1
             start_layer_index = end_layer_index
             confidence, location = self.compute_header(header_index, y)
+            if get_feature_map_size:
+                feature_maps.append(y.shape[-1])
             header_index += 1
             confidences.append(confidence)
             locations.append(location)
@@ -80,10 +89,15 @@ class SSD(nn.Module):
         for layer in self.extras:
             x = layer(x)
             confidence, location = self.compute_header(header_index, x)
+            if get_feature_map_size:
+                feature_maps.append(x.shape[-1])
             header_index += 1
             confidences.append(confidence)
             locations.append(location)
 
+        if get_feature_map_size:
+            return feature_maps
+            
         confidences = torch.cat(confidences, 1)
         locations = torch.cat(locations, 1)
         
