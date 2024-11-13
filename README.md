@@ -3,6 +3,14 @@
 This program is a merge of <https://github.com/qfgaohao/pytorch-ssd> and <https://github.com/dusty-nv/pytorch-ssd>.
 It also includes other bug fixes.
 
+## Installation
+
+### Docker
+
+<https://github.com/fa0311/ichigo-compose/blob/main/ichigo2025/mobilenet/Dockerfile>
+
+### Manual
+
 ```sh
 git clone https://github.com/fa0311/pytorch-ssd-forked
 cd pytorch-ssd-forked
