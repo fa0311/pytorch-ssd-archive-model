@@ -56,8 +56,8 @@ while True:
     ret, orig_image = cap.read()
 
     height, width, _ = orig_image.shape
-    scale = 244 / max(height, width)
-    orig_image = cv2.resize(orig_image, dsize=None, fx=scale, fy=scale)
+    size = min(height, width)
+    orig_image = cv2.resize(orig_image, (size, size))
     
     image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
     boxes, labels, probs = predictor.predict(image, 10, 0.7)
