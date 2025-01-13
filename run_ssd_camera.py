@@ -57,8 +57,10 @@ while True:
 
     height, width, _ = orig_image.shape
     size = min(height, width)
-    orig_image = cv2.resize(orig_image, (size, size))
-    
+    start_x = (width - size) // 2
+    start_y = (height - size) // 2
+    orig_image = orig_image[start_y:start_y + size, start_x:start_x + size]
+
     image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
     boxes, labels, probs = predictor.predict(image, 10, 0.7)
 
