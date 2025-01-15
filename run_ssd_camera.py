@@ -1,3 +1,4 @@
+import time
 from vision.ssd.vgg_ssd import create_vgg_ssd, create_vgg_ssd_predictor
 from vision.ssd.mobilenetv1_ssd import create_mobilenetv1_ssd, create_mobilenetv1_ssd_predictor
 from vision.ssd.mobilenetv1_ssd_lite import create_mobilenetv1_ssd_lite, create_mobilenetv1_ssd_lite_predictor
@@ -53,6 +54,7 @@ else:
 cap = cv2.VideoCapture(camera_id)
 
 while True:
+    start_time = time.time()
     ret, orig_image = cap.read()
 
     height, width, _ = orig_image.shape
@@ -62,7 +64,11 @@ while True:
     orig_image = orig_image[start_y:start_y + size, start_x:start_x + size]
 
     image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
+
+    inference_start_time = time.time()
     boxes, labels, probs = predictor.predict(image, 10, 0.7)
+    inference_end_time = time.time()
+    inference_time = inference_end_time - inference_start_time
 
     for i in range(boxes.size(0)):
         box = list(map(int, boxes[i, :]))
@@ -74,7 +80,11 @@ while True:
                     1,  # font scale
                     (255, 0, 255),
                     2)  # line type
+
+    end_time = time.time()
+    fps = 1 / (end_time - start_time)
     cv2.imshow('image', orig_image)
+    cv2.setWindowTitle('image', f'FPS: {fps:.2f} | Inference Time: {inference_time:.4f}s')
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
