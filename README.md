@@ -19,3 +19,17 @@ pip install -r requirements.txt
 wget https://github.com/fa0311/pytorch-ssd-archive-model/releases/download/v0.0.1/mobilenet-v1-ssd-mp-0_675.pth -O models/mobilenet-v1-ssd-mp-0_675.pth
 wget https://github.com/fa0311/pytorch-ssd-archive-model/releases/download/v0.0.1/mb2-ssd-lite-mp-0_686.pth -O models/mb2-ssd-lite-mp-0_686.pth
 ```
+
+## Changes
+
+- Enable `mb3-small-ssd-lite` and `mb3-large-ssd-lite` on Jetson
+- Fix `requirements.txt`
+- Support the latest `1.x` version of `numpy`
+- Add argument `--no-augment` to disable data augmentation
+- Add sample script `run_ssd_camera.py` for evaluating the model with a camera
+- Add new scheduler, `--scheduler=cosine-warmup`
+- Add learning rate tensorboard summary
+
+## Blog
+
+<https://zenn.dev/fa0311/articles/fbad7b20aa1422>
