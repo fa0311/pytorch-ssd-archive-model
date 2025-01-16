@@ -2,7 +2,7 @@ from ..transforms.transforms import *
 
 
 class TrainAugmentation:
-    def __init__(self, size, mean=0, std=1.0):
+    def __init__(self, size, mean=0, std=1.0, disable_augment=False):
         """
         Args:
             size: the size the of final image.
@@ -10,18 +10,29 @@ class TrainAugmentation:
         """
         self.mean = mean
         self.size = size
-        self.augment = Compose([
-            ConvertFromInts(),
-            PhotometricDistort(),
-            Expand(self.mean),
-            RandomSampleCrop(),
-            RandomMirror(),
-            ToPercentCoords(),
-            Resize(self.size),
-            SubtractMeans(self.mean),
-            lambda img, boxes=None, labels=None: (img / std, boxes, labels),
-            ToTensor(),
-        ])
+
+        if disable_augment:
+            self.augment = Compose([
+                ConvertFromInts(),
+                ToPercentCoords(),
+                Resize(self.size),
+                SubtractMeans(self.mean),
+                lambda img, boxes=None, labels=None: (img / std, boxes, labels),
+                ToTensor(),
+            ])
+        else:
+            self.augment = Compose([
+                ConvertFromInts(),
+                PhotometricDistort(),
+                Expand(self.mean),
+                RandomSampleCrop(),
+                RandomMirror(),
+                ToPercentCoords(),
+                Resize(self.size),
+                SubtractMeans(self.mean),
+                lambda img, boxes=None, labels=None: (img / std, boxes, labels),
+                ToTensor(),
+            ])
 
     def __call__(self, img, boxes, labels):
         """

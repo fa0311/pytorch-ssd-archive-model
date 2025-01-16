@@ -78,6 +78,10 @@ parser.add_argument('--base-net-lr', default=0.001, type=float,
 parser.add_argument('--extra-layers-lr', default=None, type=float,
                     help='initial learning rate for the layers not in base net and prediction heads.')
 
+# Param for data augmentation
+parser.add_argument('--no-augment', action='store_true',
+                    help="Disable data augmentation.")
+
 # Scheduler
 parser.add_argument('--scheduler', default="cosine", type=str,
                     help="Scheduler for SGD. It can one of multi-step, cosine, cosine-warmup.")
@@ -261,7 +265,7 @@ if __name__ == '__main__':
         sys.exit(1)
         
     # create data transforms for train/test/val
-    train_transform = TrainAugmentation(config.image_size, config.image_mean, config.image_std)
+    train_transform = TrainAugmentation(config.image_size, config.image_mean, config.image_std, disable_augment=args.no_augment)
     target_transform = MatchPrior(config.priors, config.center_variance,
                                   config.size_variance, 0.5)
 
