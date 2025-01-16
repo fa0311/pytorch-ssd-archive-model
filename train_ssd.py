@@ -13,7 +13,7 @@ import torch
 
 from torch.utils.data import DataLoader, ConcatDataset
 from torch.utils.tensorboard import SummaryWriter
-from torch.optim.lr_scheduler import CosineAnnealingLR, MultiStepLR
+from torch.optim.lr_scheduler import CosineAnnealingLR, MultiStepLR, CosineAnnealingWarmRestarts
 
 from vision.utils.misc import Timer, freeze_net_layers, store_labels
 from vision.ssd.ssd import MatchPrior
@@ -80,7 +80,7 @@ parser.add_argument('--extra-layers-lr', default=None, type=float,
 
 # Scheduler
 parser.add_argument('--scheduler', default="cosine", type=str,
-                    help="Scheduler for SGD. It can one of multi-step and cosine")
+                    help="Scheduler for SGD. It can one of multi-step, cosine, cosine-warmup.")
 
 # Params for Multi-step Scheduler
 parser.add_argument('--milestones', default="80,100", type=str,
@@ -89,6 +89,12 @@ parser.add_argument('--milestones', default="80,100", type=str,
 # Params for Cosine Annealing
 parser.add_argument('--t-max', default=100, type=float,
                     help='T_max value for Cosine Annealing Scheduler.')
+
+# Params for Cosine Annealing Warm Restarts
+parser.add_argument('--t-0', default=10, type=int,
+                    help='T_0 value for Cosine Annealing Warm Restarts')
+parser.add_argument('--t-mult', default=2, type=int,
+                    help='T_mult value for Cosine Annealing Warm Restarts')
 
 # Train params
 parser.add_argument('--batch-size', default=4, type=int,
@@ -401,6 +407,9 @@ if __name__ == '__main__':
     elif args.scheduler == 'cosine':
         logging.info("Uses CosineAnnealingLR scheduler.")
         scheduler = CosineAnnealingLR(optimizer, args.t_max, last_epoch=last_epoch)
+    elif args.scheduler == 'cosine-warmup':
+        logging.info("Uses CosineAnnealingWarmRestarts scheduler.")
+        scheduler = CosineAnnealingWarmRestarts(optimizer, args.t_0, args.t_mult, eta_min=1e-6, last_epoch=last_epoch)
     else:
         logging.fatal(f"Unsupported Scheduler: {args.scheduler}.")
         parser.print_help(sys.stderr)
@@ -411,6 +420,7 @@ if __name__ == '__main__':
     
     for epoch in range(last_epoch + 1, args.num_epochs):
         train(train_loader, net, criterion, optimizer, device=DEVICE, debug_steps=args.debug_steps, epoch=epoch)
+        tensorboard.add_scalar('Learning Rate', optimizer.param_groups[0]['lr'], epoch)
         scheduler.step()
         
         if epoch % args.validation_epochs == 0 or epoch == args.num_epochs - 1:
