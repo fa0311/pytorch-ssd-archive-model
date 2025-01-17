@@ -29,6 +29,7 @@ wget https://github.com/fa0311/pytorch-ssd-archive-model/releases/download/v0.0.
 - Add sample script `run_ssd_camera.py` for evaluating the model with a camera
 - Add new scheduler, `--scheduler=cosine-warmup`
 - Add learning rate tensorboard summary
+- Add `eta_min` to `CosineAnnealingLR` scheduler
 
 ## Blog
 

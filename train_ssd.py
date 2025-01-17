@@ -410,7 +410,7 @@ if __name__ == '__main__':
                                                      gamma=0.1, last_epoch=last_epoch)
     elif args.scheduler == 'cosine':
         logging.info("Uses CosineAnnealingLR scheduler.")
-        scheduler = CosineAnnealingLR(optimizer, args.t_max, last_epoch=last_epoch)
+        scheduler = CosineAnnealingLR(optimizer, args.t_max, last_epoch=last_epoch, eta_min=1e-6)
     elif args.scheduler == 'cosine-warmup':
         logging.info("Uses CosineAnnealingWarmRestarts scheduler.")
         scheduler = CosineAnnealingWarmRestarts(optimizer, args.t_0, args.t_mult, eta_min=1e-6, last_epoch=last_epoch)
