@@ -424,7 +424,8 @@ if __name__ == '__main__':
     
     for epoch in range(last_epoch + 1, args.num_epochs):
         train(train_loader, net, criterion, optimizer, device=DEVICE, debug_steps=args.debug_steps, epoch=epoch)
-        tensorboard.add_scalar('Learning Rate', optimizer.param_groups[0]['lr'], epoch)
+        tensorboard.add_scalar('Learning Rate (Base Net)', optimizer.param_groups[0]['lr'], epoch)
+        tensorboard.add_scalar('Learning Rate (Extra Layers)', optimizer.param_groups[1]['lr'], epoch)
         scheduler.step()
         
         if epoch % args.validation_epochs == 0 or epoch == args.num_epochs - 1:
