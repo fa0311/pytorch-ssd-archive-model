@@ -27,7 +27,7 @@ wget https://github.com/fa0311/pytorch-ssd-archive-model/releases/download/v0.0.
 - Support the latest `1.x` version of `numpy`
 - Add argument `--no-augment` to disable data augmentation
 - Add sample script `run_ssd_camera.py` for evaluating the model with a camera
-- Add new scheduler, `--scheduler=cosine-warmup`
+- Add new scheduler, `--scheduler=cosine-warmrestart`
 - Add learning rate tensorboard summary
 - Add `eta_min` to `CosineAnnealingLR` scheduler
 

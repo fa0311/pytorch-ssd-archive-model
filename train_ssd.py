@@ -84,7 +84,7 @@ parser.add_argument('--no-augment', action='store_true',
 
 # Scheduler
 parser.add_argument('--scheduler', default="cosine", type=str,
-                    help="Scheduler for SGD. It can one of multi-step, cosine, cosine-warmup.")
+                    help="Scheduler for SGD. It can one of multi-step, cosine, cosine-warmrestart.")
 
 # Params for Multi-step Scheduler
 parser.add_argument('--milestones', default="80,100", type=str,
@@ -411,7 +411,7 @@ if __name__ == '__main__':
     elif args.scheduler == 'cosine':
         logging.info("Uses CosineAnnealingLR scheduler.")
         scheduler = CosineAnnealingLR(optimizer, args.t_max, last_epoch=last_epoch, eta_min=1e-6)
-    elif args.scheduler == 'cosine-warmup':
+    elif args.scheduler == "cosine-warmrestart":
         logging.info("Uses CosineAnnealingWarmRestarts scheduler.")
         scheduler = CosineAnnealingWarmRestarts(optimizer, args.t_0, args.t_mult, eta_min=1e-6, last_epoch=last_epoch)
     else:
